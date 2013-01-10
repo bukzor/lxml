@@ -1,10 +1,11 @@
+.*.sw[a-z]
 *.pyc
 .tox
 build
 libs
 *.egg-info
 *.so
-src/lxml/include/lxml-version.h
+src/lxml/includes/lxml-version.h
 src/lxml/lxml.etree.c
 src/lxml/lxml.etree.h
 src/lxml/lxml.etree_api.h
