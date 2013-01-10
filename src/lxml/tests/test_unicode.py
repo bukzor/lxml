@@ -25,14 +25,30 @@ uxml = _bytes("<test><title>test \\xc3\\xa1\\u3120</title><h1>page \\xc3\\xa1\\u
               ).decode("unicode_escape")
 
 class UnicodeTestCase(HelperTestCase):
-    def test_unicode_xml(self):
-        tree = etree.XML(_str('<p>%s</p>') % uni)
-        self.assertEqual(uni, tree.text)
+    def _assert_unicode(self, uxml):
+        root = etree.XML(uxml)
+        self.assertEqual(uni, root.text)
+        self.assertEqual(etree.tostring(root), "<p>&#195;&#1664;&#12576;</p>")
 
-    def test_unicode_xml_broken(self):
-        uxml = _str('<?xml version="1.0" encoding="UTF-8"?>') + \
+    def test_unicode_xml(self):
+        self._assert_unicode(_str('<p>%s</p>') % uni)
+
+    def test_unicode_xml_declared_utf8_works(self):
+        self._assert_unicode(
+                _str('<?xml version="1.0" encoding="UTF-8"?>') + \
+                _str('<p>%s</p>') % uni
+        )
+
+    def test_unicode_xml_declared_latin1_works(self):
+        self._assert_unicode(
+                _str('<?xml version="1.0" encoding="latin1"?>') + \
+                _str('<p>%s</p>') % uni
+        )
+
+    def test_unicode_xml_declared_unknown_fails(self):
+        uxml = _str('<?xml version="1.0" encoding="unknown"?>') + \
                _str('<p>%s</p>') % uni
-        self.assertRaises(ValueError, etree.XML, uxml)
+        self.assertRaises(etree.XMLSyntaxError, etree.XML, uxml)
 
     def test_unicode_tag(self):
         el = etree.Element(uni)

@@ -1581,9 +1581,6 @@ cdef _Document _parseDocumentFromURL(url, _BaseParser parser):
 cdef _Document _parseMemoryDocument(text, url, _BaseParser parser):
     cdef xmlDoc* c_doc
     if python.PyUnicode_Check(text):
-        if _hasEncodingDeclaration(text):
-            raise ValueError, \
-                u"Unicode strings with encoding declaration are not supported."
         # pass native unicode only if libxml2 can handle it
         if _UNICODE_ENCODING is NULL:
             text = python.PyUnicode_AsUTF8String(text)
